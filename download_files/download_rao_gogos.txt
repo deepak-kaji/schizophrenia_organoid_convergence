@@ -1,0 +1,12 @@
+
+# Rao Gogos 2025
+cd /mnt/sda/scz_meta_analysis/rao_gogos_nature_comm_2025
+wget -O srr_list.txt https://trace.ncbi.nlm.nih.gov/Traces/sra-db-be/runinfo?acc=PRJNA1020881
+cat srr_list.txt | cut -d ',' -f1 > srr_list_tmp.txt && mv srr_list_tmp.txt srr_list.txt
+sed -i '1d' srr_list.txt
+
+while read -r srr; do
+    echo "Downloading $srr..."
+    fasterq-dump "$srr" --split-files -p 25 -o ../fastq -T ../temp --skip-technical -p
+done < srr_list.txt
+ 
