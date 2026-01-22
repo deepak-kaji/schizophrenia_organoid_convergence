@@ -12,7 +12,6 @@ mkdir -p ${OUT_BASE}/excluded
 mkdir -p ${OUT_BASE}/logs
 
 cd "$FASTQ_DIR"
-pwd 
 
 for fq1 in *_1.fastq.gz; do
 
@@ -55,7 +54,7 @@ for fq1 in *_1.fastq.gz; do
         --soloCBlen "$CB_LEN" \
         --soloUMIlen "$UMI_LEN" \
         --soloFeatures Gene Velocyto \
-        --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts
+        --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
         --soloUMIfiltering MultiGeneUMI_CR \
         --soloUMIdedup 1MM_CR \
         --clipAdapterType CellRanger4 \

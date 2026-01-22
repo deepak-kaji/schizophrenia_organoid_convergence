@@ -5,7 +5,7 @@
 FASTQ_DIR=/mnt/sda/scz_meta_analysis/sebastian_pak_nat_comm_2023/second_round_fastqs
 OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/sebastian_pak
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
-WHITELIST=/home/deepak/datasets/annotations/3M-3pgex-may-2023_TRU.txt
+WHITELIST=/home/deepak/datasets/annotations/3M-february-2018_TRU.txt
 
 mkdir -p ${OUT_BASE}/star_outputs
 mkdir -p ${OUT_BASE}/excluded
@@ -54,7 +54,10 @@ do
         --soloCBwhitelist "$WHITELIST" \
         --soloCBlen "$CB_LEN" \
         --soloUMIlen "$UMI_LEN" \
-        --soloFeatures Gene \
+        --soloFeatures Gene Velocyto \
+	--soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
+	--soloUMIfiltering MultiGeneUMI_CR \
+	--soloUMIdedup 1MM_CR \
         --clipAdapterType CellRanger4 \
         --outFilterScoreMin 30 \
         --outSAMtype BAM SortedByCoordinate \
