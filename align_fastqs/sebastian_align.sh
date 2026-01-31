@@ -48,7 +48,7 @@ for fq1 in *_2.fastq.gz; do
         --runThreadN 25 \
         --genomeDir "$GENOME_DIR" \
         --readFilesIn "$fq2" "$fq1" \
-        --readFilesCommand zcat \
+        --readFilesCommand "pigz -dc -p 8" \
         --soloType CB_UMI_Simple \
         --soloCBwhitelist "$WHITELIST" \
         --soloCBlen "$CB_LEN" \

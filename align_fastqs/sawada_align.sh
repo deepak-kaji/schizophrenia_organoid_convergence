@@ -11,9 +11,10 @@ mkdir -p ${OUT_BASE}/logs
 
 cd "$FASTQ_DIR"
 
-for r1 in *_1.fastq.gz; do
-    sample=${r1%_1.fastq.gz}
-    r2=${sample}_2.fastq.gz
+for sample in SRR7878531 SRR7878532 SRR7878533 SRR7878534 SRR7878535 SRR7878536 SRR7878537 SRR7878538; do
+
+    r1="${sample}_1.fastq.gz"
+    r2="${sample}_2.fastq.gz" 
 
     [[ -f "$r2" ]] || {
         echo "Missing R2 for $sample, skipping"
@@ -23,21 +24,27 @@ for r1 in *_1.fastq.gz; do
     echo "[$sample] Quartz-Seq2 alignment"
 
     STAR \
-        --runThreadN 32 \
+        --runThreadN 25 \
         --genomeDir "$GENOME_DIR" \
-        --readFilesIn "$r1" "$r2" \
+        --readFilesIn "$r2" "$r1" \
         --readFilesCommand zcat \
-        --sjdbGTFfile /home/deepak/datasets/annotations/gencode.v43.nochr.gtf \
-        --outFileNamePrefix "${OUT_BASE}/star_outputs/${sample}_" \
-        --outTmpDir "${OUT_BASE}/star_tmp/${sample}" \
-        --outTmpKeep None \
+	--soloType CB_UMI_Simple \
+	--soloCBwhitelist /mnt/sda/scz_meta_analysis/sawada_kato_molecular_psych_2020/quartzseq2_barcodes.txt \
+	--soloCBlen 14 \
+	--soloUMIlen 8 \
+	--soloFeatures Gene Velocyto \
+	--soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
+	--soloUMIdedup 1MM_CR \
+        --outFilterScoreMin 30 \
         --outSAMtype BAM SortedByCoordinate \
-        --outFilterMultimapNmax 20 \
-        --outFilterMismatchNoverReadLmax 0.04 \
-        --alignSJoverhangMin 8 \
-        --alignSJDBoverhangMin 1 \
-        --outSAMattributes NH HI AS nM MD \
-        --limitBAMsortRAM 300000000000
+        --outSAMattributes CR UR CY UY CB UB \
+	--outTmpDir "${OUT_BASE}/tmp/${sample}" \
+        --outTmpKeep None \
+        --outFileNamePrefix "${OUT_BASE}/star_outputs/${sample}_" \
+        --outStd Log Progress \ 
+        > ${OUT_BASE}/logs/${sample}.log 2>&1
+
+    echo "STARsolo finished"
 
 done
 
