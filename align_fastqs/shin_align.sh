@@ -32,10 +32,12 @@ for fq1 in *_1.fastq.gz; do
         CHEM="10xv3"
         CB_LEN=16
         UMI_LEN=12
+	CLIP_LEN=28
     elif [[ "$R1_LEN" -eq 26 ]]; then
         CHEM="10xv2"
         CB_LEN=16
         UMI_LEN=10
+	CLIP_LEN=26
     else
         echo "[$sample] Non-10x or unsupported chemistry (R1=$R1_LEN). Excluding."
         mv "$fq1" "$fq2" ${OUT_BASE}/excluded/
@@ -57,6 +59,7 @@ for fq1 in *_1.fastq.gz; do
         --soloCBmatchWLtype 1MM_multi_Nbase_pseudocounts \
         --soloUMIfiltering MultiGeneUMI_CR \
         --soloUMIdedup 1MM_CR \
+        --clip3pNbases 0 $CLIP_LEN \
         --clipAdapterType CellRanger4 \
         --outFilterScoreMin 30 \
         --outSAMtype BAM SortedByCoordinate \

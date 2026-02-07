@@ -37,6 +37,10 @@ do
             -b $BARCODE \
             -R $VCF \
             -O $CELLSNP_OUT \
+	    --cellTAG CB \
+	    --UMItag None \
+	    --genotype \
+	    --gzip \
             --minMAF 0.1 \
             --minCOUNT 20 \
             -p $THREADS
@@ -50,6 +54,8 @@ do
 #        pixi run --manifest-path /home/deepak/pixi_envs/cellbender/pixi.toml vireo -c $CELLSNP_OUT \
 #              -d $VCF \
 #              -N $NDONORS \
+#              --randSeed 100 \
+#              -t GT
 #              -o $VIREO_OUT
 #    else
 #        echo "Vireo output exists for $SRR, skipping..."
