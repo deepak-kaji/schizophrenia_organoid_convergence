@@ -7,6 +7,7 @@ BAM_DIR=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/star_outputs
 VCF=/mnt/sda/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/genotypes/vcf/NowakowskiLabOnly.vcf.gz
 CELLSNP_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_cellsnp
 VIREO_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_out
+BARCODE_DIR=/mnt/lacie/scz_meta_analysis/cellbender/shin_nowakowski
 
 # Number of donors
 NDONORS=44
@@ -23,7 +24,7 @@ do
     echo "=== Processing $SRR ==="
 
     BAM=${BAM_DIR}/${SRR}_Aligned.sortedByCoord.out.bam
-    BARCODE=${BAM_DIR}/${SRR}_Solo.out/Gene/raw/barcodes.tsv
+    BARCODE=${BARCODE_DIR}/${SRR}_Solo.out/cellbender_barcodes.tsv
     CELLSNP_OUT=${CELLSNP_BASE}/${SRR}
     VIREO_OUT=${VIREO_BASE}/${SRR}
 

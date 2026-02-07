@@ -11,7 +11,8 @@ OUTPUT_DIR="/mnt/lacie/scz_meta_analysis/cellbender"
 mkdir -p "$OUTPUT_DIR"
 
 # Loop through each study directory in the Starsolo directory (ROOT_DIR)
-for study_dir in $ROOT_DIR/*; do
+#for study_dir in $ROOT_DIR/*; do
+for study_dir in /mnt/sdb/scz_meta_analysis_processed/purcell_mulle; do
     if [ -d "$study_dir" ]; then
         # Create a cellbender output directory inside the /mnt/lacie/scz_meta_analysis/cellbender folder
         output_base_dir="$OUTPUT_DIR/$(basename "$study_dir")"
