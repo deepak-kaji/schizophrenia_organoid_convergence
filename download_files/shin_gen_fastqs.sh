@@ -10,17 +10,18 @@ bash -c '
   fasterq-dump "$srr/$srr.sra" \
     --split-files \
     --force \
-    -O ../fastq/ \
-    -t ../tmp/ \
+    --include-technical \
+    -O /mnt/lacie/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/fastq \
+    -t /mnt/lacie/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/tmp \
     --threads 4
 
   # Compress immediately
-  pigz ../fastq/${srr}_*.fastq
+  pigz /mnt/lacie/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/fastq/${srr}_*.fastq
 
   # Verify compression
-  gzip -t ../fastq/${srr}_*.fastq.gz
+  gzip -t /mnt/lacie/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/fastq/${srr}_*.fastq.gz
 
   # Remove any leftover uncompressed FASTQs
-  rm -f ../fastq/${srr}_*.fastq
+  #rm -f /mnt/lacie/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/fastq/${srr}_*.fastq
 '
 

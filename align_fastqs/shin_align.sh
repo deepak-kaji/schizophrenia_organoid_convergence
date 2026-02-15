@@ -5,7 +5,6 @@
 FASTQ_DIR=/mnt/sda/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/fastq
 OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
-WHITELIST=/home/deepak/datasets/annotations/3M-february-2018_TRU.txt
 
 mkdir -p ${OUT_BASE}/star_outputs
 mkdir -p ${OUT_BASE}/excluded
@@ -27,21 +26,19 @@ for fq1 in *_1.fastq.gz; do
 
     echo "[$sample] R1 length = $R1_LEN"
 
-    # decide chemistry
-    if [[ "$R1_LEN" -eq 28 ]]; then
-        CHEM="10xv3"
-        CB_LEN=16
-        UMI_LEN=12
-	CLIP_LEN=28
-    elif [[ "$R1_LEN" -eq 26 ]]; then
+    # decide chemistry , 10xv2 unless proven otherwise
+    if [[ "$R1_LEN" -eq 26 ]]; then
         CHEM="10xv2"
         CB_LEN=16
         UMI_LEN=10
 	CLIP_LEN=26
-    else
-        echo "[$sample] Non-10x or unsupported chemistry (R1=$R1_LEN). Excluding."
-        mv "$fq1" "$fq2" ${OUT_BASE}/excluded/
-        continue
+        WHITELIST=/home/deepak/programs/cellranger/cellranger-10.0.0/lib/python/cellranger/barcodes/737K-august-2016.txt 
+    else 
+        CHEM="10xv3"
+        CB_LEN=16
+        UMI_LEN=12
+	CLIP_LEN=28
+        WHITELIST=/home/deepak/datasets/annotations/3M-february-2018_TRU.txt
     fi
 
     echo "[$sample] Detected ${CHEM}, running STARsolo"
@@ -60,6 +57,7 @@ for fq1 in *_1.fastq.gz; do
         --soloUMIfiltering MultiGeneUMI_CR \
         --soloUMIdedup 1MM_CR \
         --clip3pNbases 0 $CLIP_LEN \
+	--soloBarcodeReadLength 0 \
         --clipAdapterType CellRanger4 \
         --outFilterScoreMin 30 \
         --outSAMtype BAM SortedByCoordinate \
