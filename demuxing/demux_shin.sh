@@ -2,7 +2,7 @@
 
 # Paths
 BAM_DIR=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/star_outputs
-VCF=/mnt/sda/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/genotypes/gtc2vcf/from_idat_chr_mapped.vcf.gz
+VCF=/mnt/sda/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/genotypes/gtc2vcf/vcfs/from_idat_chr_mapped.vcf.gz
 CELLSNP_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_cellsnp
 VIREO_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_out
 BARCODE_DIR=/mnt/lacie/scz_meta_analysis/cellbender/shin_nowakowski
@@ -11,7 +11,7 @@ BARCODE_DIR=/mnt/lacie/scz_meta_analysis/cellbender/shin_nowakowski
 THREADS=25
 
 # List of SRR runs
-SRRS=(SRR26424562 SRR26424563 SRR26424564 SRR26425665 SRR26424566 SRR26424567 \
+SRRS=(SRR26424562 SRR26424563 SRR26424564 SRR26424665 SRR26424566 SRR26424567 \
       SRR26424568 SRR26424569 SRR26424570 SRR26424571 SRR26424572 SRR26424573 \
       SRR26424574 SRR26424575 SRR26424576 SRR26424577 SRR26424578 SRR26424579 \
       SRR26424580 SRR26424581 SRR26424582 SRR26424583 SRR26424584 SRR26424585 \
@@ -44,7 +44,7 @@ do
 	    --genotype \
 	    --gzip \
             --minMAF 0.1 \
-            --minCOUNT 10 \
+            --minCOUNT 20 \
             -p $THREADS
     else
         echo "cellSNP output exists for $SRR, skipping..."
