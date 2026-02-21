@@ -8,7 +8,7 @@ VIREO_BASE=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_out
 BARCODE_DIR=/mnt/lacie/scz_meta_analysis/cellbender/shin_nowakowski
 
 # Number of donors
-THREADS=25
+THREADS=12
 
 # List of SRR runs
 SRRS=(SRR26424562 SRR26424563 SRR26424564 SRR26424665 SRR26424566 SRR26424567 \
@@ -43,8 +43,8 @@ do
 	    --UMItag None \
 	    --genotype \
 	    --gzip \
-            --minMAF 0.1 \
-            --minCOUNT 20 \
+            --minMAF 0.0 \
+            --minCOUNT 10 \
             -p $THREADS
     else
         echo "cellSNP output exists for $SRR, skipping..."
