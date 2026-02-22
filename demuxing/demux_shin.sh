@@ -81,3 +81,27 @@ do
     echo "=== Done with $SRR ==="
 done
 
+## Run 89 unsupervised as well to handle missing genotype ##
+
+# Unsupervised Vireo for SRR26424589 (3 known + 1 unknown)
+SRR=SRR26424589
+CELLSNP_OUT=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_cellsnp/${SRR}
+VIREO_OUT_UNSUP=/mnt/sdb/scz_meta_analysis_processed/shin_nowakowski/vireo_out/${SRR}_unsup
+
+mkdir -p $VIREO_OUT_UNSUP
+
+if [ ! -f ${VIREO_OUT_UNSUP}/donor_assignments.tsv ]; then
+    echo "Running unsupervised Vireo for $SRR..."
+    pixi run --manifest-path /home/deepak/pixi_envs/cellbender/pixi.toml vireo \
+        -c $CELLSNP_OUT \
+        -N 4 \
+        --randSeed 42 \
+        -t GT \
+        -o $VIREO_OUT_UNSUP
+else
+    echo "Unsupervised Vireo output exists for $SRR, skipping..."
+fi
+
+bcftools gtcheck \
+    -g /mnt/sda/scz_meta_analysis/shin_nowakowski_cellstemcell_2025/genotypes/gtc2vcf/vcfs/from_idat_chr_mapped.vcf.gz \
+    ${VIREO_BASE}/SRR26424589_unsup/donor_genotypes.vcf.gz
