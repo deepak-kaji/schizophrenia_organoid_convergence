@@ -3,7 +3,7 @@
 #set -euo pipefail
 
 FASTQ_DIR=/mnt/sda/scz_meta_analysis/notaras_colak_molecular_psychiatry_2021/fastq
-OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/notaras_colak
+OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/studies/notaras_colak
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
 WHITELIST=/home/deepak/programs/cellranger/cellranger-10.0.0/lib/python/cellranger/barcodes/737K-august-2016.txt
 

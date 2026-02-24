@@ -3,7 +3,7 @@
 #set -euo pipefail
 
 FASTQ_DIR=/mnt/lacie/scz_meta_analysis/purcell_mulle_sci_advances_2023/raw_data/GBA21979-69765/30-465547609/00_fastq
-OUT_BASE=/mnt/lacie/scz_meta_analysis/purcell_mulle_sci_advances_2023
+OUT_BASE=/mnt/lacie/scz_meta_analysis/studies/purcell_mulle_sci_advances_2023
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
 WHITELIST=/home/deepak/datasets/annotations/3M-february-2018_TRU.txt
 

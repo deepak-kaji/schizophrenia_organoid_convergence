@@ -3,7 +3,7 @@
 #set -euo pipefail
 
 FASTQ_DIR=/mnt/sda/scz_meta_analysis/walsh_studer_neuron_2025/fastq
-OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/walsh_studer
+OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/studies/walsh_studer
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
 WHITELIST=/home/deepak/datasets/annotations/3M-february-2018_TRU.txt
 

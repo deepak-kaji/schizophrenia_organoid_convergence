@@ -3,7 +3,7 @@
 set -euo pipefail
 
 FASTQ_DIR=/mnt/sda/scz_meta_analysis/sawada_kato_molecular_psych_2020/fastq
-OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/sawada_kato
+OUT_BASE=/mnt/sdb/scz_meta_analysis_processed/studies/sawada_kato
 GENOME_DIR=/home/deepak/datasets/annotations/CELLRANGER_GENOME_DIR
 
 mkdir -p ${OUT_BASE}/star_outputs
