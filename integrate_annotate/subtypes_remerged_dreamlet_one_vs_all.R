@@ -6,16 +6,16 @@ library(dplyr)
 
 BPPARAM <- MulticoreParam(workers = 25, progressbar = TRUE)
 
-output_dir <- '/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/one_vs_all/subtype'
+output_dir <- '/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/one_vs_all/subtypes_remerged'
 
-sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/one_versus_all_for_dreamlet.h5ad',
+sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/one_versus_all_for_dreamlet_remerged.h5ad',
 	       use_hdf5=TRUE, layers=FALSE, raw=FALSE, verbose=FALSE, uns=FALSE)
 
 pbObj <- aggregateToPseudoBulk(
   sce,
   assay = "X",
   sample_id = "Run_Donor_Sample",
-  cluster_id = "subtype",
+  cluster_id = "subtypes_remerged",
   BPPARAM = BPPARAM)
 
 # Get Assay Names  ---
@@ -44,11 +44,21 @@ for(i in c(1:length(mg))){
     sce_limited <- sce[, sce$subclass == sub("^(([^_]+_[^_]+)).*$", "\\1", mg[i])]
 
     # run comparison of 1 cluster vs rest
-    mg_one_minus <- unique(sce_limited$subtype)
+    mg_one_minus <- unique(sce_limited$subtypes_remerged)
     mg_one_minus <- mg_one_minus[mg_one_minus != mg[i]]
     
-    #fit = dreamletCompareClusters(pbObj, list(test = mg[i], baseline = mg_one_minus), method='none', min.cells=5, min.count=1, errorsAsWarnings = TRUE) # method='fixed'
-    
+    if(length(mg_one_minus) == 0){
+    message(paste("Skipping", mg[i], "- no baseline clusters"))
+
+    drop_log <- rbind(drop_log, data.frame(
+        subtype = mg[i],
+        dropped = NA,
+        total = NA
+    ))
+
+    next  # <-- skips dreamlet AND everything below
+    }
+
     # Capture output
     captured <- capture.output({
         fit = dreamletCompareClusters(

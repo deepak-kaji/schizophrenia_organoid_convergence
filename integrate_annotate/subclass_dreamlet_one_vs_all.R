@@ -6,7 +6,7 @@ library(dplyr)
 
 BPPARAM <- MulticoreParam(workers = 25, progressbar = TRUE)
 
-output_dir <- '/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/one_vs_all/subtype'
+output_dir <- '/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/one_vs_all/subclass'
 
 sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/one_versus_all_for_dreamlet.h5ad',
 	       use_hdf5=TRUE, layers=FALSE, raw=FALSE, verbose=FALSE, uns=FALSE)
@@ -46,7 +46,7 @@ for(i in c(1:length(mg))){
     
     # up- or down-reg genes
     res = topTable(fit, coef='compare', number=Inf, sort.by='logFC', lfc=0)
-    res$subtype = mg[i]
+    res$subclass = mg[i]
 
     # save table as CSF for python import
     out_file <- file.path(output_dir, paste0("DE_", mg[i], ".csv"))
