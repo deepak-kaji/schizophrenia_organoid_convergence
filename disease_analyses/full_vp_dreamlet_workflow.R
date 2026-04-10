@@ -8,19 +8,21 @@ BPPARAM <- MulticoreParam(workers = 25, progressbar = TRUE)
 sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/integrated_adata_full_annotation_dreamlet.h5ad', 
 	       use_hdf5=TRUE, layers=FALSE, raw=FALSE, verbose=FALSE, uns=FALSE)
 
+sce$Donor_Sample <- paste(sce$Donor, sce$Sample.Name, sep = "_") 
+
 pb <- aggregateToPseudoBulk(
   sce,
   assay = "X",
-  sample_id = "Run_Donor_Sample",
+  sample_id = "Donor_Sample",
   cluster_id = "subclass_annotations",
   BPPARAM = BPPARAM
 )
 
 colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
 
-## consider Protocol? is Whitelist colinear with any of the other columns
-formula_full <- ~ (1|Run) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + 
-	          (1|Broad_Genotype) + (1|Whitelist) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
+# consider Protocol? is Whitelist colinear with any of the other columns
+
+formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
 
 res.proc.vp <- processAssays(
   pb,
@@ -33,7 +35,7 @@ res.proc.vp <- processAssays(
 )
 
 plot_voom_fig = plotVoom(res.proc.vp, ncol=4)
-ggsave(plot_voom_fig, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/plot_voom.pdf')
+ggsave(plot_voom_fig, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/plot_voom.png', dpi=500)
 
 # --- Step 3: Fit variance partition model ---
 
@@ -43,17 +45,14 @@ write.csv(vp.lst, file = "/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dr
 
 # Optional: Visualize variance explained
 plot_varpart <- plotVarPart(vp.lst)
-ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/visualize_variance_full.pdf')
+ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/visualize_variance_full.png', dpi=500)
 
 # --- Step 4: Process assays again for DE model ---
 
 # Trimmed model for differential expression
 
-formula_trim <- ~ (1|Donor) + (1|Manuscript) + (1|Sex) + Broad_Genotype + scale(n_counts) + scale(percent_mito) + 0 
+formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Protocol) + (1|Sex) + scale(n_counts) + scale(percent_mito)  
 
-##formula_trim <- ~ (1|Run) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + 
-##	          Generalized_Genotype + (1|Whitelist) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
-#
 res.proc.de <- processAssays(
   pb,
   formula = formula_trim,
@@ -77,11 +76,11 @@ res.dl <- dreamlet(
 
 # Combine results across all assays
 
-dge_22q11 = topTable(res.dl, coef='Broad_Genotype_22q11', number=Inf)
-dge_NRXN1 = topTable(res.dl, coef='Broad_Genotype_NRXN1', number=Inf)
-dge_3q29 = topTable(res.dl, coef='Broad_Genotype_3q29', number=Inf)
-dge_15q13 = topTable(res.dl, coef='Broad_Genotype_15q13', number=Inf)
-dge_Idiopathic = topTable(res.dl, coef='Broad_Genotype_Idiopathic', number=Inf)
+dge_22q11 = topTable(res.dl, coef='Broad_Genotype_22q11', number=Inf, p.value = 0.05)
+dge_NRXN1 = topTable(res.dl, coef='Broad_Genotype_NRXN1', number=Inf, p.value = 0.05)
+dge_3q29 = topTable(res.dl, coef='Broad_Genotype_3q29', number=Inf, p.value = 0.05)
+dge_15q13 = topTable(res.dl, coef='Broad_Genotype_15q13', number=Inf, p.value = 0.05)
+dge_Idiopathic = topTable(res.dl, coef='Broad_Genotype_Idiopathic', number=Inf, p.value = 0.05)
 
 # Save as CSV
 
