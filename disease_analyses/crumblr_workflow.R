@@ -21,12 +21,12 @@ pb <- aggregateToPseudoBulk(
 
 colData(pb)$n_counts <- metadata(pb)$aggr_means$n_counts[
   match(as.character(rownames(colData(pb))),
-        as.character(metadata(pb)$aggr_means$Run_Donor_Sample))
+        as.character(metadata(pb)$aggr_means$Donor_Sample))
 ]
 
 colData(pb)$percent_mito <- metadata(pb)$aggr_means$percent_mito[
   match(as.character(rownames(colData(pb))),
-        as.character(metadata(pb)$aggr_means$Run_Donor_Sample))
+        as.character(metadata(pb)$aggr_means$Donor_Sample))
 ]
 
 ## Model Broad Genotype As Random Effect ##
