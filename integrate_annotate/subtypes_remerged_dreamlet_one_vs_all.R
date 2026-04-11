@@ -11,10 +11,12 @@ output_dir <- '/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges
 sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/one_versus_all_for_dreamlet_remerged.h5ad',
 	       use_hdf5=TRUE, layers=FALSE, raw=FALSE, verbose=FALSE, uns=FALSE)
 
+sce$Donor_Sample <- paste(sce$Donor, sce$Sample.Name, sep = '_')
+_
 pbObj <- aggregateToPseudoBulk(
   sce,
   assay = "X",
-  sample_id = "Run_Donor_Sample",
+  sample_id = "Donor_Sample",
   cluster_id = "subtypes_remerged",
   BPPARAM = BPPARAM)
 

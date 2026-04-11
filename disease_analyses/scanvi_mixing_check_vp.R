@@ -23,7 +23,7 @@ meta$Sex <- factor(meta$Sex)
 meta$Protocol <- factor(meta$Protocol)
 
 ## consider Protocol? is Whitelist colinear with any of the other columns
-formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
+formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day +
                   (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
 
 

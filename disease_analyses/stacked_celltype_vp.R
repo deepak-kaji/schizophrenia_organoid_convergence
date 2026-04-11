@@ -15,13 +15,13 @@ pb <- aggregateToPseudoBulk(
   sce,
   assay = "X",
   sample_id = "Donor_Sample",
-  cluster_id = "subclass_annotations",
+  cluster_id = "subclass_annotations_markers",
   BPPARAM = BPPARAM
 )
 
 pb_stacked <- stackAssays(pb)
 
-formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito) + (1|stackedAssay)
+formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito) + (1|stackedAssay)
 
 res.proc.vp <- processAssays(
   pb_stacked,
