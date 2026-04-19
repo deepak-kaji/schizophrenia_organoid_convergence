@@ -21,10 +21,11 @@ meta$Chemistry <- factor(meta$Chemistry)
 meta$Manuscript <- factor(meta$Manuscript)
 meta$Sex <- factor(meta$Sex)
 meta$Protocol <- factor(meta$Protocol)
+meta$subclass_annotations_markers <- factor(meta$subclass_annotations_markers)
 
 ## consider Protocol? is Whitelist colinear with any of the other columns
 formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day +
-                  (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
+                  (1|Sex) + (1|Protocol) + (1|subclass_annotations_markers) + scale(n_counts) + scale(percent_mito)  
 
 
 vp <- fitExtractVarPartModel(expr, formula_full, meta, BPPARAM=BPPARAM)
