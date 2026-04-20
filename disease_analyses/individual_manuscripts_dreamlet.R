@@ -25,6 +25,7 @@ colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
 
 ## Step 2: Subset Out Manuscripts ##
 
+# khan commented out becuase relatively small donor study (2x2 case control) resulted in unstable variance downstream
 fernando <- pb[,colData(pb)$Manuscript == 'Fernando'] 
 #khan <- pb[,colData(pb)$Manuscript == 'Khan'] 
 shin <- pb[,colData(pb)$Manuscript == 'Shin'] 
@@ -42,10 +43,11 @@ walsh <- walsh[, names(assays(walsh)) != "Mesenchymal-like cells VIM+VCAN+SPARC+
 
 # Trimmed model for differential expression
 
+# Note in meta-analyses, Protocol is kept as a covariate to ensure proper modeling for Fernando which uses 2 protocols within the same study
+# In all other studies, protocol will be dropped since it exhibits no variance 
+
 formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
             	(1|Protocol) + (1|Sex) + Day + scale(n_counts) + scale(percent_mito)  
-
-#formula_trim <- ~ 0 + Broad_Genotype  
 
 res.fernando <-processAssays(fernando, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
 #res.khan <-processAssays(khan, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)

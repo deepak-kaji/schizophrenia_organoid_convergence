@@ -20,43 +20,41 @@ pb <- aggregateToPseudoBulk(
 
 colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
 
-#formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
-#                  Day + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
-#
-#
-#res.proc.vp <- processAssays(
-#  pb,
-#  formula = formula_full,
-#  min.cells = 5,
-#  min.count = 5,
-#  min.samples = 4,
-#  min.prop = 0.2,
-#  BPPARAM = BPPARAM
-#)
-#
-#plot_voom_fig = plotVoom(res.proc.vp, ncol=4)
-#ggsave(plot_voom_fig, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/plot_voom.png', dpi=500)
-#
-## --- Step 3: Fit variance partition model ---
-#
-#vp.lst <- fitVarPart(res.proc.vp, formula_full)
-#
-#write.csv(vp.lst, file = "/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/variance_partition_long.csv", row.names = FALSE)
-#
-## Optional: Visualize variance explained
-#plot_varpart <- plotVarPart(vp.lst)
-#ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/visualize_variance_full.png', dpi=500)
-#
-## --- Step 4: Process assays again for DE model ---
-#
-## Trimmed model for differential expression
-#
-##formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
-##            	(1|Protocol) + (1|Sex) + Day + scale(n_counts) + scale(percent_mito)  
-#
+formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
+                  Day + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
+
+
+res.proc.vp <- processAssays(
+  pb,
+  formula = formula_full,
+  min.cells = 5,
+  min.count = 5,
+  min.samples = 4,
+  min.prop = 0.2,
+  BPPARAM = BPPARAM
+)
+
+plot_voom_fig = plotVoom(res.proc.vp, ncol=4)
+ggsave(plot_voom_fig, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/plot_voom.png', dpi=500)
+
+# --- Step 3: Fit variance partition model ---
+
+vp.lst <- fitVarPart(res.proc.vp, formula_full)
+
+write.csv(vp.lst, file = "/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/variance_partition_long.csv", row.names = FALSE)
+
+# Optional: Visualize variance explained
+plot_varpart <- plotVarPart(vp.lst)
+ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/dreamlet_dges/disease_analyses/visualize_variance_full.png', dpi=500)
+
+# --- Step 4: Process assays again for DE model ---
+
+# Trimmed model for differential expression
+
+# removed Protocol 
 
 formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day +
-            	(1|Protocol) + (1|Sex) + scale(n_counts) + scale(percent_mito)  
+            	 (1|Sex) + scale(n_counts) + scale(percent_mito)  
 
 res.proc.de <- processAssays(
   pb,
