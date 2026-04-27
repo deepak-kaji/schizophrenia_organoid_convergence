@@ -16,7 +16,8 @@ pb <- aggregateToPseudoBulk(
   sce,
   assay = "X",
   sample_id = "Donor_Sample",
-  cluster_id = "subclass_annotations_markers",
+  cluster_id = "CellType",
+#  cluster_id = "subclass_annotations_markers",
   BPPARAM = BPPARAM)
 
 colData(pb)$n_counts <- metadata(pb)$aggr_means$n_counts[
