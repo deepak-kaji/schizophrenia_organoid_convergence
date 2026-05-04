@@ -55,7 +55,7 @@ ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/d
 # removed Protocol 
 
 formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day +
-            	 (1|Sex) + scale(n_counts) + scale(percent_mito)  
+            	 (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
 
 res.proc.de <- processAssays(
   pb,

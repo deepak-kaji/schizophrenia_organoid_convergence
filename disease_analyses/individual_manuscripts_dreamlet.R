@@ -11,33 +11,41 @@ sce = readH5AD('/mnt/sdb/scz_meta_analysis_processed/anndata_objs/integrated_ada
 sce$Donor_Sample <- paste(sce$Donor, sce$Sample.Name, sep = "_") 
 
 # Stressed Glia Too Small To Test 
-sce <- sce[,sce$subclass_annotations_markers != 'Stressed Glia FTL+B2M+GLUL+']
+sce <- sce[,sce$CellType != 'Stressed Glia FTL+B2M+GLUL+']
 
-pb <- aggregateToPseudoBulk(
-  sce,
-  assay = "X",
-  sample_id = "Donor_Sample",
-  cluster_id = "subclass_annotations_markers",
-  BPPARAM = BPPARAM
-)
-
-colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
+colData(sce)$Broad_Genotype <- make.names(colData(sce)$Broad_Genotype)
 
 ## Step 2: Subset Out Manuscripts ##
 
-# khan commented out becuase relatively small donor study (2x2 case control) resulted in unstable variance downstream
-fernando <- pb[,colData(pb)$Manuscript == 'Fernando'] 
-#khan <- pb[,colData(pb)$Manuscript == 'Khan'] 
-shin <- pb[,colData(pb)$Manuscript == 'Shin'] 
-purcell <- pb[,colData(pb)$Manuscript == 'Purcell'] 
-sebastian <- pb[,colData(pb)$Manuscript == 'Sebastian'] 
-sawada <- pb[,colData(pb)$Manuscript == 'Sawada'] 
-walsh <- pb[,colData(pb)$Manuscript == 'Walsh']
-notaras<- pb[,colData(pb)$Manuscript == 'Notaras'] 
-rao <- pb[,colData(pb)$Manuscript == 'Rao'] 
+# khan not estimatable due to small donor study (2x2 case control) resulted in unstable variance downstream
+fernando <- sce[,colData(sce)$Manuscript == 'Fernando'] 
+shin <- sce[,colData(sce)$Manuscript == 'Shin'] 
+purcell <- sce[,colData(sce)$Manuscript == 'Purcell'] 
+sebastian <- sce[,colData(sce)$Manuscript == 'Sebastian'] 
+sawada <- sce[,colData(sce)$Manuscript == 'Sawada'] 
+walsh <- sce[,colData(sce)$Manuscript == 'Walsh']
+notaras<- sce[,colData(sce)$Manuscript == 'Notaras'] 
+rao <- sce[,colData(sce)$Manuscript == 'Rao'] 
+
+## purcell doesnt contribute meaningfully to OPC/Oligo --> drop
+purcell_keep <- !grepl("OPC|Oligodendrocyte|Astro", purcell$CellType)
+purcell <- purcell[, purcell_keep]
+
+walsh_keep <- !grepl("OPC|Oligodendrocyte", walsh$CellType)
+walsh <- walsh[, walsh_keep]
+
+pb_fernando <- aggregateToPseudoBulk(fernando, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_shin <- aggregateToPseudoBulk(shin, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_purcell <- aggregateToPseudoBulk(purcell, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_sebastian <- aggregateToPseudoBulk(sebastian, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_sawada <- aggregateToPseudoBulk(sawada, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_walsh <- aggregateToPseudoBulk(walsh, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_notaras <- aggregateToPseudoBulk(notaras, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
+pb_rao <- aggregateToPseudoBulk(rao, assay = "X", sample_id = "Donor_Sample", cluster_id = "CellType", BPPARAM = BPPARAM)
 
 # walsh crashing on this cell type , not estimatable
-walsh <- walsh[, names(assays(walsh)) != "Mesenchymal-like cells VIM+VCAN+SPARC+"]
+
+assays(pb_walsh) <- assays(pb_walsh)[names(assays(pb_walsh)) != "Mesenchymal-like cells VIM+VCAN+SPARC+"]
 
 # Step 3: Process assays again for DE model ---
 
@@ -49,19 +57,17 @@ walsh <- walsh[, names(assays(walsh)) != "Mesenchymal-like cells VIM+VCAN+SPARC+
 formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
             	(1|Protocol) + (1|Sex) + Day + scale(n_counts) + scale(percent_mito)  
 
-res.fernando <-processAssays(fernando, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-#res.khan <-processAssays(khan, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.shin <-processAssays(shin, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.purcell <-processAssays(purcell, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.sebastian <-processAssays(sebastian, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.sawada <-processAssays(sawada, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.walsh <-processAssays(walsh, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.notaras <-processAssays(notaras, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
-res.rao <-processAssays(rao, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.fernando <-processAssays(pb_fernando, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.shin <-processAssays(pb_shin, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.purcell <-processAssays(pb_purcell, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.sebastian <-processAssays(pb_sebastian, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.sawada <-processAssays(pb_sawada, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.walsh <-processAssays(pb_walsh, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.notaras <-processAssays(pb_notaras, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.rao <-processAssays(pb_rao, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
 
 # Step 4: Run dreamlet DE analysis #Raodl.fernando <- dreamlet(res.fernando, formula = formula_trim, contrasts = c(Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.fernando <- dreamlet(res.fernando, formula = formula_trim, contrasts = c(Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
-#res.dl.khan <- dreamlet(res.khan, formula = formula_trim, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.shin <- dreamlet(res.shin, formula = formula_trim, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.purcell <- dreamlet(res.purcell, formula = formula_trim, contrasts = c(Broad_Genotype_3q29 = "Broad_GenotypeX3q29del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.sebastian <- dreamlet(res.sebastian, formula = formula_trim, contrasts = c(Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
@@ -77,7 +83,6 @@ res.dl.walsh <- dreamlet(res.walsh, formula = formula_trim,
 # Combine results across all assays
 
 dge_fernando = topTable(res.dl.fernando, coef='Broad_Genotype_NRXN1', number=Inf)
-#dge_khan = topTable(res.dl.khan, coef='Broad_Genotype_22q11', number=Inf)
 dge_shin = topTable(res.dl.shin, coef='Broad_Genotype_22q11', number=Inf)
 dge_purcell = topTable(res.dl.purcell, coef='Broad_Genotype_3q29', number=Inf)
 dge_sebastian = topTable(res.dl.sebastian, coef='Broad_Genotype_NRXN1', number=Inf)
@@ -90,7 +95,6 @@ dge_walsh_22q11 = topTable(res.dl.walsh, coef='Broad_Genotype_22q11', number=Inf
 # rbind them for meta-analysis #
 
 dge_fernando$dataset <- 'fernando'
-#dge_khan$dataset <- 'khan'
 dge_shin$dataset <- 'shin'
 dge_purcell$dataset <- 'purcell'
 dge_sebastian$dataset <- 'sebastian'
