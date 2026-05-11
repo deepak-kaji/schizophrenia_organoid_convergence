@@ -15,7 +15,6 @@ pb <- aggregateToPseudoBulk(
   assay = "X",
   sample_id = "Donor_Sample",
   cluster_id = "CellType",
-#  cluster_id = "subclass_annotations_markers",
   BPPARAM = BPPARAM
 )
 
