@@ -20,8 +20,7 @@ pb <- aggregateToPseudoBulk(
 
 colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
 
-formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +
-                  Day + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
+formula_full <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day + (1|Sex) + (1|Protocol) + scale(n_counts) + scale(percent_mito)  
 
 
 res.proc.vp <- processAssays(

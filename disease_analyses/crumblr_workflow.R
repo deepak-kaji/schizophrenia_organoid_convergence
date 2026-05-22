@@ -31,17 +31,19 @@ colData(pb)$percent_mito <- metadata(pb)$aggr_means$percent_mito[
         as.character(metadata(pb)$aggr_means$Donor_Sample))
 ]
 
+colData(pb)$Broad_Genotype <- make.names(colData(pb)$Broad_Genotype)
+
 ## Model Broad Genotype As Random Effect ##
 
-formula_sep <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +(1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
+#formula_sep <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) +(1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
 
-formula_sep_fixed <- ~ Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
+#formula_sep_fixed <- ~ Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
 
 # without Sample.Name #
 
 formula_sep <- ~ (1|Broad_Genotype) + (1|Donor) + (1|Chemistry) + (1|Manuscript) +(1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
 
-formula_sep_fixed <- ~ Broad_Genotype + (1|Donor) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
+formula_sep_fixed <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Chemistry) + (1|Manuscript) + (1|Sex) + Day + (1|Protocol) + scale(n_counts) + scale(percent_mito)
 
 cobj <- crumblr(cellCounts(pb))
 
@@ -52,13 +54,16 @@ write.csv(as.data.frame(cobj$E), file = "/mnt/sdb/scz_meta_analysis_processed/dg
 
 # Differential Testing #
 
-fit <- dream(cobj, formula_sep_fixed, colData(pb), BPPARAM = BPPARAM)
+L = makeContrastsDream(formula_sep_fixed, colData(pb),
+		       contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl", 
+                                     Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl", 
+                                     Broad_Genotype_3q29 = "Broad_GenotypeX3q29del - Broad_GenotypeControl", 
+                                     Broad_Genotype_15q13 = "Broad_GenotypeX15q133del - Broad_GenotypeControl", 
+                                     Broad_Genotype_Idiopathic = "Broad_GenotypeIdiopathic_Schizophrenia - Broad_GenotypeControl"))
 
-fit <- eBayes(fit, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl", 
-                Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl", 
-                Broad_Genotype_3q29 = "Broad_GenotypeX3q29del - Broad_GenotypeControl", 
-                Broad_Genotype_15q13 = "Broad_GenotypeX15q133del - Broad_GenotypeControl", 
-                Broad_Genotype_Idiopathic = "Broad_GenotypeIdiopathic_Schizophrenia - Broad_GenotypeControl"), BPPARAM = BPPARAM)
+fit <- dream(cobj, formula_sep_fixed, colData(pb), L=L)
+
+fit <- eBayes(fit)
 
 # Top Tables #
 dge_22q11 = topTable(fit, coef='Broad_Genotype_22q11', number=Inf)
