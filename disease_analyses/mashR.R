@@ -166,6 +166,7 @@ print(cor(as.vector(pm_em), as.vector(pm_c), use = "pairwise.complete.obs"))
 # =======================================================
 # EXPORT MASH RESULTS (Gabriel-style bundle)
 # All outputs saved to a single directory
+
 # =======================================================
 
 outdir <- "/mnt/sdb/scz_meta_analysis_processed/mash_results/"
@@ -183,6 +184,62 @@ orig <- m_model$logFC.original
 # Uncertainty / diagnostics
 post_sd <- model$result$PosteriorSD
 neg_prob <- model$result$NegativeProb
+
+## Defining Composite Posterior Tests ##
+
+support <- 1 - model$result$lfsr
+rownames(support) <- common_genes
+
+# test whether all diseases exhibit any shared DGE signature by celltype
+
+cols <- colnames(support)
+celltype <- sub("^[^_]+_", "", cols)
+disease <- sub("_.*", "", cols)
+
+celltype_groups <- split(cols, celltype)
+
+outdir <- "/mnt/sdb/scz_meta_analysis_processed/mash_results/"
+
+run_celltype_composite <- function(support, cols, name, outdir, test = "at least 1") {
+
+  res <- compositePosteriorTest(
+    support,
+    include = cols,
+    test = test
+  )
+
+  df <- data.frame(
+    gene = rownames(support),
+    score = as.numeric(res)
+  )
+
+  write.csv(
+    df,
+    file.path(outdir, paste0("composite_", name, "_", test, ".csv")),
+    row.names = FALSE
+  )
+
+  return(res)
+}
+
+results <- list()
+
+# test each celltype to see if theres a convergeant disease signature #
+
+for (ct in names(celltype_groups)) {
+
+  message("Running cell type: ", ct)
+
+  cols <- celltype_groups[[ct]]
+
+  results[[ct]] <- run_celltype_composite(
+    support = support,
+    cols = cols,
+    name = gsub(" ", "_", ct),
+    outdir = outdir,
+    test = "all"
+  )
+}
 
 # -----------------------
 # Write matrices to disk
