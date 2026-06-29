@@ -49,7 +49,7 @@ ggsave(plot_varpart, file='/mnt/sdb/scz_meta_analysis_processed/dge_signatures/d
 # --- Step 4: Process assays again for DE model ---
 
 # Trimmed model for differential expression
-
+## Mega Analysis ##
 # removed Protocol 
 
 formula_trim <- ~ 0 + Broad_Genotype + (1|Donor) + (1|Sample.Name) + (1|Chemistry) + (1|Manuscript) + Day +
