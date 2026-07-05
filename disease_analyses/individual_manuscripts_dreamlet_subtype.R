@@ -26,13 +26,16 @@ sawada <- sce[,colData(sce)$Manuscript == 'Sawada']
 walsh <- sce[,colData(sce)$Manuscript == 'Walsh']
 notaras<- sce[,colData(sce)$Manuscript == 'Notaras'] 
 rao <- sce[,colData(sce)$Manuscript == 'Rao'] 
+khan <- sce[,colData(sce)$Manuscript == 'Khan'] 
+
+# note we cannot estimate contrasts on khan #
 
 ## purcell doesnt contribute meaningfully to OPC/Oligo --> drop
-purcell_keep <- !grepl("OPC|Oligodendrocyte|Astro", purcell$CellType)
-purcell <- purcell[, purcell_keep]
+#purcell_keep <- !grepl("OPC|Oligodendrocyte|Astro", purcell$CellType)
+#purcell <- purcell[, purcell_keep]
 
-walsh_keep <- !grepl("OPC|Oligodendrocyte", walsh$CellType)
-walsh <- walsh[, walsh_keep]
+#walsh_keep <- !grepl("OPC|Oligodendrocyte", walsh$CellType)
+#walsh <- walsh[, walsh_keep]
 
 pb_fernando <- aggregateToPseudoBulk(fernando, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
 pb_shin <- aggregateToPseudoBulk(shin, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
@@ -42,10 +45,14 @@ pb_sawada <- aggregateToPseudoBulk(sawada, assay = "X", sample_id = "Donor_Sampl
 pb_walsh <- aggregateToPseudoBulk(walsh, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
 pb_notaras <- aggregateToPseudoBulk(notaras, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
 pb_rao <- aggregateToPseudoBulk(rao, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
+pb_khan <- aggregateToPseudoBulk(khan, assay = "X", sample_id = "Donor_Sample", cluster_id = "subtype_cluster_annotations_markers", BPPARAM = BPPARAM)
 
-# walsh crashing on this cell type , not estimatable
+# remove unestimatable subtypes #
 
-assays(pb_walsh) <- assays(pb_walsh)[names(assays(pb_walsh)) != "Mesenchymal-like cells VIM+VCAN+SPARC+"]
+assays(pb_purcell) <- assays(pb_purcell)[names(assays(pb_purcell)) != 'oRG HOPX+FOXG1+EMX1+']
+assays(pb_notaras) <- assays(pb_notaras)[names(assays(pb_notaras)) != 'Hindbrain Inhibitory Neuron LHX1+SLC32A1+LAMP5+']
+assays(pb_notaras) <- assays(pb_notaras)[names(assays(pb_notaras)) != 'Unknown Neuron CALY+MEF2C+CNTN1+']
+assays(pb_notaras) <- assays(pb_notaras)[names(assays(pb_notaras)) != 'oRG HOPX+FOXG1+EMX1+']
 
 # Step 3: Process assays again for DE model ---
 
@@ -65,8 +72,10 @@ res.sawada <-processAssays(pb_sawada, formula = formula_trim, min.cells = 5, min
 res.walsh <-processAssays(pb_walsh, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
 res.notaras <-processAssays(pb_notaras, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
 res.rao <-processAssays(pb_rao, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
+res.khan <-processAssays(pb_khan, formula = formula_trim, min.cells = 5, min.count = 5, min.samples = 4, min.prop = 0.2, BPPARAM = BPPARAM)
 
-# Step 4: Run dreamlet DE analysis #Raodl.fernando <- dreamlet(res.fernando, formula = formula_trim, contrasts = c(Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
+# Step 4: Run dreamlet DE analysis
+
 res.dl.fernando <- dreamlet(res.fernando, formula = formula_trim, contrasts = c(Broad_Genotype_NRXN1 = "Broad_GenotypeNRXN1del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.shin <- dreamlet(res.shin, formula = formula_trim, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.purcell <- dreamlet(res.purcell, formula = formula_trim, contrasts = c(Broad_Genotype_3q29 = "Broad_GenotypeX3q29del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
@@ -76,6 +85,7 @@ res.dl.sawada <- dreamlet(res.sawada, formula = formula_trim,
 res.dl.notaras <- dreamlet(res.notaras, formula = formula_trim,
 			   contrasts = c(Broad_Genotype_Idiopathic = "Broad_GenotypeIdiopathic_Schizophrenia - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.rao <- dreamlet(res.rao, formula = formula_trim, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
+res.dl.khan <- dreamlet(res.khan, formula = formula_trim, contrasts = c(Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
 res.dl.walsh <- dreamlet(res.walsh, formula = formula_trim, 
 			 contrasts = c(Broad_Genotype_15q13 = "Broad_GenotypeX15q133del - Broad_GenotypeControl",
 				       Broad_Genotype_22q11 = "Broad_GenotypeX22q112del - Broad_GenotypeControl"), BPPARAM = BPPARAM)
@@ -89,6 +99,7 @@ dge_sebastian = topTable(res.dl.sebastian, coef='Broad_Genotype_NRXN1', number=I
 dge_sawada = topTable(res.dl.sawada, coef='Broad_Genotype_Idiopathic', number=Inf)
 dge_notaras = topTable(res.dl.notaras, coef='Broad_Genotype_Idiopathic', number=Inf)
 dge_rao = topTable(res.dl.rao, coef='Broad_Genotype_22q11', number=Inf)
+#dge_khan = topTable(res.dl.khan, coef='Broad_Genotype_22q11', number=Inf)
 dge_walsh_15q13 = topTable(res.dl.walsh, coef='Broad_Genotype_15q13', number=Inf)
 dge_walsh_22q11 = topTable(res.dl.walsh, coef='Broad_Genotype_22q11', number=Inf)
 
@@ -101,6 +112,7 @@ dge_sebastian$dataset <- 'sebastian'
 dge_sawada$dataset <- 'sawada'
 dge_notaras$dataset <- 'notaras'
 dge_rao$dataset <- 'rao'
+#dge_khan$dataset <- 'khan'
 dge_walsh_15q13$dataset <- 'walsh_15q13'
 dge_walsh_22q11$dataset <- 'walsh_22q11'
 
