@@ -1,4 +1,4 @@
-Distinct Genetic Models of Psychosis Exhibit Limited Neurodevelopmental Convergence in Telencephalic Organoids
+**Distinct Genetic Models of Psychosis Exhibit Limited Neurodevelopmental Convergence in Telencephalic Organoids**
 
 Deepak A. Kaji, Gabriel E. Hoffman, Panos Roussos
 
