@@ -169,6 +169,7 @@ Supplementary Figures 5–6	Figures/Supplementary_Figure_5_6_Defining_Disease_Si
 Supplementary Figure 7	Figures/Supplementary_Figure_7_Cell_Type_Composition.ipynb
 Supplementary Figure 8	Figures/Supplementary_Figure_8_mashR_Sensitivity_Analysis.ipynb
 Supplementary Figure 9	Figures/Supplementary_Figure_9_mash_Power_Analysis.ipynb
+
 Data availability
 
 Raw sequencing data from the contributing studies are available through the repositories and accession numbers described in the manuscript and Supplementary Table 2, with the exception of the Khan et al. dataset, which was not publicly available because of privacy restrictions.
