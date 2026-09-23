@@ -159,9 +159,13 @@ Figures and tables
 The Figures/ directory contains notebooks corresponding to the manuscript figures and supplementary figures.
 
 Figure 1	Figures/Figure_1_Subclass_Composition.ipynb
+
 Figure 2	Figures/Figure_2_Subtype_Composition.ipynb
+
 Figure 3	Figures/Figure_3-MetaAnalysis.ipynb
+
 Figure 4	Figures/Figure_4-Shared_Divergent.ipynb
+
 Supplementary Figure 1	Figures/Supplementary_Figure_1_Mixing.ipynb
 Supplementary Figure 2	Figures/Supplementary_Figure_2_Atlas_Consensus.ipynb
 Supplementary Figure 3	Figures/Supplementary_Figure_3_logFC.ipynb
